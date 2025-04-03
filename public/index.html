@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Automation UI</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Quiz Automation Tool</h1>
+        <div class="form-group">
+            <label for="courseId">Course Module ID:</label>
+            <input type="number" id="courseId" value="235656">
+        </div>
+        <div class="form-group">
+            <label for="maxQuestions">Max Questions:</label>
+            <input type="number" id="maxQuestions" value="11">
+        </div>
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" id="username" placeholder="Enter your username">
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" value="#Fe8080">
+        </div>
+        <button id="startBtn">Start Automation</button>
+        <div id="log">Logs will appear here...</div>
+    </div>
+
+    <script>
+        const startBtn = document.getElementById('startBtn');
+        const logDiv = document.getElementById('log');
+
+        function appendLog(message) {
+            logDiv.textContent += `${new Date().toLocaleTimeString()} - ${message}\n`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        startBtn.addEventListener('click', async () => {
+            const courseId = document.getElementById('courseId').value;
+            const maxQuestions = document.getElementById('maxQuestions').value;
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (!courseId || !maxQuestions || !password) {
+                appendLog("Error: All fields are required.");
+                return;
+            }
+
+            startBtn.disabled = true;
+            appendLog("Starting automation...");
+
+            try {
+                const response = await fetch('/start', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ courseId, maxQuestions, username, password })
+                });
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    const chunk = decoder.decode(value);
+                    appendLog(chunk);
+                }
+
+                appendLog("Automation completed.");
+            } catch (error) {
+                appendLog(`Error: ${error.message}`);
+            } finally {
+                startBtn.disabled = false;
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'929819b4a916b038',t:'MTc0MzUxMDY1NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

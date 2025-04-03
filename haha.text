@@ -1,0 +1,386 @@
+const puppeteer = require("puppeteer");
+const fs = require("fs");
+
+(async () => {
+    var id = 199695;
+
+    const browser = await puppeteer.launch({
+        headless: false,
+        executablePath: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+        userDataDir: "C:\\Users\\ferre_roc1fyd\\AppData\\Local\\Google\\Chrome\\User Data\\PuppeteerProfile"
+    });
+
+    const page = await browser.newPage();
+
+    const cookiesFilePath = "cookies.json";
+
+    if (fs.existsSync(cookiesFilePath)) {
+        const cookies = JSON.parse(fs.readFileSync(cookiesFilePath, "utf8"));
+        await page.setCookie(...cookies);
+    }
+
+    await page.goto("https://bcpeducollege.elearningcommons.com/login/index.php", { waitUntil: "networkidle2" });
+
+    if ((await page.$("#username")) !== null) {
+        // await page.type("#username", "your-username", { delay: 50 }); 
+        await page.type("#password", "#Fe8080", { delay: 50 });
+
+        await Promise.all([
+            page.click("#loginbtn"),
+            page.waitForNavigation({ waitUntil: "networkidle2" }),
+        ]);
+
+        const cookies = await page.cookies();
+        fs.writeFileSync(cookiesFilePath, JSON.stringify(cookies, null, 2));
+    }
+
+    const courseURL = `https://bcpeducollege.elearningcommons.com/mod/quiz/view.php?id=${id}`;
+    await page.goto(courseURL, { waitUntil: "networkidle2" });
+
+    const sesskey = await page.evaluate(() => {
+        const sesskeyElement = document.querySelector('input[name="sesskey"]');
+        return sesskeyElement ? sesskeyElement.value : 'x7sgjicg4p';
+    });
+
+    const startAttemptURL = `https://bcpeducollege.elearningcommons.com/mod/quiz/startattempt.php?cmid=${id}&sesskey=${sesskey}&_qf__mod_quiz_form_preflight_check_form=1&submitbutton=Start%20attempt&x=Cancel`;
+
+    // Wrap the navigation and button click in a try-catch block
+    try {
+        await page.goto(startAttemptURL, { waitUntil: "networkidle2" });
+
+        const submitButtonSelector = 'input[name="submitbutton"][value="Start attempt"]';
+        await page.waitForSelector(submitButtonSelector, { visible: true, timeout: 10000 });
+
+        await Promise.all([
+            page.click(submitButtonSelector),
+            page.waitForNavigation({ waitUntil: "networkidle2" })
+        ]);
+
+        // Get the current URL after navigation (the attempt URL)
+        const attemptURL = page.url();
+        console.log("Quiz Attempt URL:", attemptURL);
+    } catch (error) {
+        console.error("Error navigating to start attempt or clicking submit:", error);
+    }
+
+    const quizContent = await page.evaluate(() => {
+        const questionElements = document.querySelectorAll('.que');
+        return Array.from(questionElements).map((qe) => {
+            const questionNumberElement = qe.querySelector('.info h4 .rui-qno');
+            const questionNumber = questionNumberElement ? questionNumberElement.innerHTML : "Unknown";
+
+            const questionElement = qe.querySelector('.qtext');
+            const question = questionElement ? questionElement.innerHTML : "Question not found";
+
+            const answerElements = qe.querySelectorAll('.answer .d-flex');
+            const choices = Array.from(answerElements).map((el, index) => {
+                const letter = String.fromCharCode(97 + index);
+                const text = el.querySelector('.flex-fill').innerHTML;
+                return `${letter}. ${text}`;
+            }).join('\n');
+
+            return `Question ${questionNumber}:\n${question}\n\n${choices}`;
+        }).join('\n\n---\n\n');
+    });
+
+    fs.writeFileSync("quiz_body.html", quizContent);
+
+    await new Promise(() => {});
+})();
+
+
+
+////////////////////////////////////////////////
+const puppeteer = require("puppeteer");
+const fs = require("fs");
+
+(async () => {
+    var id = 230154;
+
+    const browser = await puppeteer.launch({
+        headless: false,
+        executablePath: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+        userDataDir: "C:\\Users\\ferre_roc1fyd\\AppData\\Local\\Google\\Chrome\\User Data\\PuppeteerProfile",
+        // args: ['--start-fullscreen'] // Add this line to launch in full-screen mode
+    });
+
+    const page = await browser.newPage();
+
+    await page.setViewport({ width: 1920, height: 1080 }); // You can adjust these values
+
+    const cookiesFilePath = "cookies.json";
+
+    if (fs.existsSync(cookiesFilePath)) {
+        const cookies = JSON.parse(fs.readFileSync(cookiesFilePath, "utf8"));
+        await page.setCookie(...cookies);
+    }
+
+    await page.goto("https://bcpeducollege.elearningcommons.com/login/index.php", { waitUntil: "networkidle2" });
+
+    if ((await page.$("#username")) !== null) {
+        // await page.type("#username", "your-username", { delay: 50 }); 
+        await page.type("#password", "#Fe8080", { delay: 50 });
+
+        await Promise.all([
+            page.click("#loginbtn"),
+            page.waitForNavigation({ waitUntil: "networkidle2" }),
+        ]);
+
+        const cookies = await page.cookies();
+        fs.writeFileSync(cookiesFilePath, JSON.stringify(cookies, null, 2));
+    }
+
+    const courseURL = `https://bcpeducollege.elearningcommons.com/mod/quiz/view.php?id=${id}`;
+    await page.goto(courseURL, { waitUntil: "networkidle2" });
+
+    const sesskey = await page.evaluate(() => {
+        const sesskeyElement = document.querySelector('input[name="sesskey"]');
+        return sesskeyElement ? sesskeyElement.value : 'x7sgjicg4p';
+    });
+
+    const startAttemptURL = `https://bcpeducollege.elearningcommons.com/mod/quiz/startattempt.php?cmid=${id}&sesskey=${sesskey}&_qf__mod_quiz_form_preflight_check_form=1&submitbutton=Start%20attempt&x=Cancel`;
+
+    try {
+        await page.goto(startAttemptURL, { waitUntil: "networkidle2" });
+
+        const submitButtonSelector = 'input[name="submitbutton"][value="Start attempt"]';
+        await page.waitForSelector(submitButtonSelector, { visible: true, timeout: 10000 });
+
+        await Promise.all([
+            page.click(submitButtonSelector),
+            page.waitForNavigation({ waitUntil: "networkidle2" })
+        ]);
+
+        const attemptURL = page.url();
+        console.log("Quiz Attempt URL:", attemptURL);
+    } catch (error) {
+        console.error("Error navigating to start attempt or clicking submit:", error);
+    }
+
+    // Function to extract quiz content from the current page
+    const extractQuizContent = async () => {
+        return await page.evaluate(() => {
+            const questionElements = document.querySelectorAll('.que');
+            return Array.from(questionElements).map((qe) => {
+                const questionNumberElement = qe.querySelector('.info h4 .rui-qno');
+                const questionNumber = questionNumberElement ? questionNumberElement.innerHTML : "Unknown";
+
+                const questionElement = qe.querySelector('.qtext');
+                const question = questionElement ? questionElement.innerHTML : "Question not found";
+
+                const answerElements = qe.querySelectorAll('.answer .d-flex');
+                const choices = Array.from(answerElements).map((el, index) => {
+                    const letter = String.fromCharCode(97 + index);
+                    const text = el.querySelector('.flex-fill').innerHTML;
+                    return `${letter}. ${text}`;
+                }).join('\n');
+
+                return `Question ${questionNumber}:\n${question}\n\n${choices}`;
+            }).join('\n\n---\n\n');
+        });
+    };
+
+    // Extract and save the first question
+    let quizContent = await extractQuizContent();
+    fs.writeFileSync("quiz_body.html", quizContent);
+
+    // Click the "Next" button to go to the next question
+    try {
+        const nextButtonSelector = 'input[name="next"][type="submit"]'; // Adjust selector if needed
+        await page.waitForSelector(nextButtonSelector, { visible: true, timeout: 10000 });
+
+        await Promise.all([
+            page.click(nextButtonSelector),
+            page.waitForNavigation({ waitUntil: "networkidle2" })
+        ]);
+
+        // Extract the second question
+        const secondQuestionContent = await extractQuizContent();
+
+        // Append the second question to the existing file
+        fs.appendFileSync("quiz_body.html", `\n\n---\n\n${secondQuestionContent}`);
+        console.log("Second question appended to quiz_body.html");
+    } catch (error) {
+        console.error("Error clicking Next button or extracting second question:", error);
+    }
+
+    try {
+        const nextButtonSelector = 'input[name="next"][type="submit"]'; // Adjust selector if needed
+        await page.waitForSelector(nextButtonSelector, { visible: true, timeout: 10000 });
+
+        await Promise.all([
+            page.click(nextButtonSelector),
+            page.waitForNavigation({ waitUntil: "networkidle2" })
+        ]);
+
+        // Extract the second question
+        const secondQuestionContent = await extractQuizContent();
+
+        // Append the second question to the existing file
+        fs.appendFileSync("quiz_body.html", `\n\n---\n\n${secondQuestionContent}`);
+        console.log("Second question appended to quiz_body.html");
+    } catch (error) {
+        console.error("Error clicking Next button or extracting second question:", error);
+    }
+
+    try {
+        const nextButtonSelector = 'input[name="next"][type="submit"]'; // Adjust selector if needed
+        await page.waitForSelector(nextButtonSelector, { visible: true, timeout: 10000 });
+
+        await Promise.all([
+            page.click(nextButtonSelector),
+            page.waitForNavigation({ waitUntil: "networkidle2" })
+        ]);
+
+        // Extract the second question
+        const secondQuestionContent = await extractQuizContent();
+
+        // Append the second question to the existing file
+        fs.appendFileSync("quiz_body.html", `\n\n---\n\n${secondQuestionContent}`);
+        console.log("Second question appended to quiz_body.html");
+    } catch (error) {
+        console.error("Error clicking Next button or extracting second question:", error);
+    }
+
+    try {
+        const nextButtonSelector = 'input[name="next"][type="submit"]'; // Adjust selector if needed
+        await page.waitForSelector(nextButtonSelector, { visible: true, timeout: 10000 });
+
+        await Promise.all([
+            page.click(nextButtonSelector),
+            page.waitForNavigation({ waitUntil: "networkidle2" })
+        ]);
+
+        // Extract the second question
+        const secondQuestionContent = await extractQuizContent();
+
+        // Append the second question to the existing file
+        fs.appendFileSync("quiz_body.html", `\n\n---\n\n${secondQuestionContent}`);
+        console.log("Second question appended to quiz_body.html");
+    } catch (error) {
+        console.error("Error clicking Next button or extracting second question:", error);
+    }
+
+
+    try {
+        const nextButtonSelector = 'input[name="next"][type="submit"]'; // Adjust selector if needed
+        await page.waitForSelector(nextButtonSelector, { visible: true, timeout: 10000 });
+
+        await Promise.all([
+            page.click(nextButtonSelector),
+            page.waitForNavigation({ waitUntil: "networkidle2" })
+        ]);
+
+        // Extract the second question
+        const secondQuestionContent = await extractQuizContent();
+
+        // Append the second question to the existing file
+        fs.appendFileSync("quiz_body.html", `\n\n---\n\n${secondQuestionContent}`);
+        console.log("Second question appended to quiz_body.html");
+    } catch (error) {
+        console.error("Error clicking Next button or extracting second question:", error);
+    }
+
+
+    try {
+        const nextButtonSelector = 'input[name="next"][type="submit"]'; // Adjust selector if needed
+        await page.waitForSelector(nextButtonSelector, { visible: true, timeout: 10000 });
+
+        await Promise.all([
+            page.click(nextButtonSelector),
+            page.waitForNavigation({ waitUntil: "networkidle2" })
+        ]);
+
+        // Extract the second question
+        const secondQuestionContent = await extractQuizContent();
+
+        // Append the second question to the existing file
+        fs.appendFileSync("quiz_body.html", `\n\n---\n\n${secondQuestionContent}`);
+        console.log("Second question appended to quiz_body.html");
+    } catch (error) {
+        console.error("Error clicking Next button or extracting second question:", error);
+    }
+
+
+
+    try {
+        const nextButtonSelector = 'input[name="next"][type="submit"]'; // Adjust selector if needed
+        await page.waitForSelector(nextButtonSelector, { visible: true, timeout: 10000 });
+
+        await Promise.all([
+            page.click(nextButtonSelector),
+            page.waitForNavigation({ waitUntil: "networkidle2" })
+        ]);
+
+        // Extract the second question
+        const secondQuestionContent = await extractQuizContent();
+
+        // Append the second question to the existing file
+        fs.appendFileSync("quiz_body.html", `\n\n---\n\n${secondQuestionContent}`);
+        console.log("Second question appended to quiz_body.html");
+    } catch (error) {
+        console.error("Error clicking Next button or extracting second question:", error);
+    }
+
+
+    try {
+        const nextButtonSelector = 'input[name="next"][type="submit"]'; // Adjust selector if needed
+        await page.waitForSelector(nextButtonSelector, { visible: true, timeout: 10000 });
+
+        await Promise.all([
+            page.click(nextButtonSelector),
+            page.waitForNavigation({ waitUntil: "networkidle2" })
+        ]);
+
+        // Extract the second question
+        const secondQuestionContent = await extractQuizContent();
+
+        // Append the second question to the existing file
+        fs.appendFileSync("quiz_body.html", `\n\n---\n\n${secondQuestionContent}`);
+        console.log("Second question appended to quiz_body.html");
+    } catch (error) {
+        console.error("Error clicking Next button or extracting second question:", error);
+    }
+
+
+
+    try {
+        const nextButtonSelector = 'input[name="next"][type="submit"]'; // Adjust selector if needed
+        await page.waitForSelector(nextButtonSelector, { visible: true, timeout: 10000 });
+
+        await Promise.all([
+            page.click(nextButtonSelector),
+            page.waitForNavigation({ waitUntil: "networkidle2" })
+        ]);
+
+        // Extract the second question
+        const secondQuestionContent = await extractQuizContent();
+
+        // Append the second question to the existing file
+        fs.appendFileSync("quiz_body.html", `\n\n---\n\n${secondQuestionContent}`);
+        console.log("Second question appended to quiz_body.html");
+    } catch (error) {
+        console.error("Error clicking Next button or extracting second question:", error);
+    }
+
+    try {
+        const nextButtonSelector = 'input[name="next"][type="submit"]'; // Adjust selector if needed
+        await page.waitForSelector(nextButtonSelector, { visible: true, timeout: 10000 });
+
+        await Promise.all([
+            page.click(nextButtonSelector),
+            page.waitForNavigation({ waitUntil: "networkidle2" })
+        ]);
+
+        // Extract the second question
+        const secondQuestionContent = await extractQuizContent();
+
+        // Append the second question to the existing file
+        fs.appendFileSync("quiz_body.html", `\n\n---\n\n${secondQuestionContent}`);
+        console.log("Second question appended to quiz_body.html");
+    } catch (error) {
+        console.error("Error clicking Next button or extracting second question:", error);
+    }
+
+    await new Promise(() => {});
+})();

@@ -1,0 +1,64 @@
+body {
+    font-family: 'Courier New', monospace;
+    margin: 20px;
+    background-color: #000000;
+    color: #00FF00;
+}
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: #1a1a1a;
+    padding: 20px;
+    border-radius: 4px;
+    border: 1px solid #00FF00;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
+}
+h1 {
+    text-align: center;
+    color: #00FF00;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+.form-group {
+    margin-bottom: 15px;
+}
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #00CC00;
+}
+input, button {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #00FF00;
+    border-radius: 4px;
+    background-color: #0d0d0d;
+    color: #00FF00;
+    font-family: 'Courier New', monospace;
+}
+button {
+    background-color: #003300;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+button:hover {
+    background-color: #006600;
+    box-shadow: 0 0 10px #00FF00;
+}
+#log {
+    height: 300px;
+    overflow-y: auto;
+    background: #0d0d0d;
+    padding: 10px;
+    border: 1px solid #00FF00;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    white-space: pre-wrap;
+    color: #00FF00;
+}
+input:focus, button:focus {
+    outline: none;
+    box-shadow: 0 0 5px #00FF00;
+}
