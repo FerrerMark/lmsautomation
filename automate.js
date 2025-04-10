@@ -3,7 +3,7 @@ const fs = require("fs");
 
 (async () => {
     const id = 235656;
-    const maxQuestions = 11; 
+    const maxQuestions = 51; 
 
     const browser = await puppeteer.launch({
         headless: false,
@@ -136,7 +136,7 @@ const fs = require("fs");
             const optionsText = options.map((opt) => `${opt.letter}) ${opt.label}`).join(" ");
             const aiPrompt = `${questionText} ${optionsText} Please respond with only one letter: 'a', 'b', 'c', or 'd'.`;
             const answer = await getAIAnswer(aiPrompt);
-            console.log(`AI selected answer for Q${questionCount}: ${answer}`);
+            console.log(`AI selected answer : ${answer}`);
 
             const answerValue = answerMap[answer] || answerMap["d"];
             const escapedQuestionId = questionId.replace(":", "\\:");

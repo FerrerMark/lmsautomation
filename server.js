@@ -102,7 +102,7 @@ app.post('/start', async (req, res) => {
         let questionCount = 0;
         let hasNextPage = true;
         let pageCount = 0;
-        const maxPages = 10;
+        const maxPages = 51;
 
         while (hasNextPage && questionCount < maxQuestionsNum && pageCount < maxPages) {
             pageCount++;
@@ -139,7 +139,7 @@ app.post('/start', async (req, res) => {
                 const optionsText = options.map((opt) => `${opt.letter}) ${opt.label}`).join(" ");
                 const aiPrompt = `${questionText} ${optionsText} Please respond with only one letter: 'a', 'b', 'c', or 'd'.`;
                 const answer = await getAIAnswer(aiPrompt);
-                log(`AI selected answer for Q${questionCount}: ${answer}`);
+                log(`AI selected answer : ${answer}`);
 
                 const answerValue = answerMap[answer] || answerMap["d"];
                 const escapedQuestionId = questionId.replace(":", "\\:");
@@ -169,7 +169,7 @@ app.post('/start', async (req, res) => {
                                 },
                                 { timeout: 30000 },
                                 questions[0]?.questionText || ""
-                            );
+                            );  
                         }),
                     ]);
                     log("Moved to next page...");

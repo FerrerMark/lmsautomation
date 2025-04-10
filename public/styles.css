@@ -1,64 +1,119 @@
+:root {
+    --primary-green: #00FF00;
+    --secondary-green: #00CC00;
+    --dark-green: #003300;
+    --hover-green: #006600;
+    --black: #000000;
+    --dark-gray: #1a1a1a;
+    --darker-gray: #0d0d0d;
+    --glow: rgba(0, 255, 0, 0.2);
+}
+
 body {
     font-family: 'Courier New', monospace;
     margin: 20px;
-    background-color: #000000;
-    color: #00FF00;
+    background-color: var(--black);
+    color: var(--primary-green);
 }
+
 .container {
     max-width: 800px;
     margin: 0 auto;
-    background: #1a1a1a;
+    background: var(--dark-gray);
     padding: 20px;
     border-radius: 4px;
-    border: 1px solid #00FF00;
-    box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
+    border: 1px solid var(--primary-green);
+    box-shadow: 0 0 15px var(--glow);
 }
+
 h1 {
     text-align: center;
-    color: #00FF00;
+    color: var(--primary-green);
     text-transform: uppercase;
     letter-spacing: 2px;
 }
+
+.content-wrapper {
+    margin-bottom: 24px;
+    display: flex;
+    gap: 20px;
+}
+
+.form-wrapper {
+    max-width: 30%;
+    flex: 1;
+}
+
 .form-group {
     margin-bottom: 15px;
 }
+
 label {
     display: block;
     margin-bottom: 5px;
     font-weight: bold;
-    color: #00CC00;
+    color: var(--secondary-green);
 }
+
 input, button {
-    width: 100%;
     padding: 8px;
-    margin-bottom: 10px;
-    border: 1px solid #00FF00;
+    border: 1px solid var(--primary-green);
     border-radius: 4px;
-    background-color: #0d0d0d;
-    color: #00FF00;
+    background-color: var(--darker-gray);
+    color: var(--primary-green);
     font-family: 'Courier New', monospace;
 }
+
+input {
+    width: 221px;
+}
+
 button {
-    background-color: #003300;
+    width: 100%;
+    background-color: var(--dark-green);
     cursor: pointer;
     transition: all 0.3s;
 }
+
 button:hover {
-    background-color: #006600;
-    box-shadow: 0 0 10px #00FF00;
+    background-color: var(--hover-green);
+    box-shadow: 0 0 10px var(--primary-green);
 }
+
 #log {
-    height: 300px;
+    max-height: 296px;
+    display: flex;
+    flex: 1;
     overflow-y: auto;
-    background: #0d0d0d;
+    background: var(--darker-gray);
     padding: 10px;
-    border: 1px solid #00FF00;
+    border: 1px solid var(--primary-green);
     border-radius: 4px;
     font-family: 'Courier New', monospace;
     white-space: pre-wrap;
-    color: #00FF00;
+    color: var(--primary-green);
 }
+
 input:focus, button:focus {
     outline: none;
-    box-shadow: 0 0 5px #00FF00;
+    box-shadow: 0 0 5px var(--primary-green);
+}
+
+#log::-webkit-scrollbar {
+    width: 8px;
+}
+
+#log::-webkit-scrollbar-track {
+    background: var(--darker-gray);
+    border-left: 1px solid var(--primary-green);
+}
+
+#log::-webkit-scrollbar-thumb {
+    background: var(--dark-green);
+    border-radius: 4px;
+    border: 1px solid var(--primary-green);
+}
+
+#log::-webkit-scrollbar-thumb:hover {
+    background: var(--hover-green);
 }
