@@ -5,7 +5,7 @@ const { Readable } = require('stream');
 
 const app = express();
 app.use(express.json());
-app.use(express.static('public')); // Serve static files from 'public' folder
+app.use(express.static('public'));
 
 app.post('/start', async (req, res) => {
     const { courseId, maxQuestions, username, password } = req.body;
@@ -22,10 +22,9 @@ app.post('/start', async (req, res) => {
     }
 
     (async () => {
-        const id = parseInt(courseId); // Course module ID
+        const id = parseInt(courseId);
         const maxQuestionsNum = parseInt(maxQuestions); // Maximum questions to process
 
-        // Launch browser
         const browser = await puppeteer.launch({
             headless: false,
             executablePath: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
@@ -36,14 +35,12 @@ app.post('/start', async (req, res) => {
         const page = await browser.newPage();
         await page.setViewport({ width: 1920, height: 1080 });
 
-        // Load cookies if available
         const cookiesFilePath = "cookies.json";
         if (fs.existsSync(cookiesFilePath)) {
             const cookies = JSON.parse(fs.readFileSync(cookiesFilePath, "utf8"));
             await page.setCookie(...cookies);
         }
 
-        // Login to the site
         await page.goto("https://bcpeducollege.elearningcommons.com/login/index.php", { waitUntil: "networkidle2" });
         if ((await page.$("#username")) !== null) {
             await page.type("#username", username, { delay: 50 });
@@ -59,7 +56,6 @@ app.post('/start', async (req, res) => {
             log("Logged in and cookies saved.");
         }
 
-        // Navigate to quiz page and start attempt
         const courseURL = `https://bcpeducollege.elearningcommons.com/mod/quiz/view.php?id=${id}`;
         await page.goto(courseURL, { waitUntil: "networkidle2", timeout: 60000 });
 
@@ -72,7 +68,6 @@ app.post('/start', async (req, res) => {
         await page.goto(startAttemptURL, { waitUntil: "networkidle2", timeout: 60000 });
         log("Quiz attempt started.");
 
-        // Function to fetch AI answer
         async function getAIAnswer(prompt) {
             const apiKey = "AIzaSyB43n_ZMgajhuPxyKegvuT3UTPko5B4iLo";
             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
@@ -184,8 +179,7 @@ app.post('/start', async (req, res) => {
         }
 
         log("You can submit it now.");
-        // await browser.close();
-        logStream.push(null); // End the stream
+        logStream.push(null); 
     })().catch((error) => {
         log(`Error: ${error.message}`);
         logStream.push(null);

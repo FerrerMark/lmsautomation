@@ -20,8 +20,4 @@ const puppeteer = require("puppeteer");
         await page.waitForNavigation({ waitUntil: "networkidle2" });
     }
 
-    // await page.waitForTimeout(5000);
-    // await browser.close();
-
 })();
-
